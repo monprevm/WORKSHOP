@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#070914" />
+<title>ASCENSO — Sube o cae</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: #070914;
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: none;
+    -webkit-user-select: none; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    font-family: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  }
+  #game { position: fixed; inset: 0; }
+  #game canvas { display: block; margin: 0 auto; }
+  #loader {
+    position: fixed; inset: 0; z-index: 20;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 22px;
+    background:
+      radial-gradient(120% 80% at 50% 100%, #5b2a54 0%, #1a1030 45%, #070914 100%);
+    color: #fff3e3; transition: opacity .45s ease;
+  }
+  #loader.hidden { opacity: 0; pointer-events: none; }
+  #loader .logo {
+    font-size: clamp(42px, 9vw, 84px); font-weight: 700; letter-spacing: .22em;
+    padding-left: .22em;
+    text-shadow: 0 0 30px rgba(255, 176, 103, .45);
+  }
+  #loader .logo span { color: #ffb067; }
+  #loader .bar {
+    width: min(280px, 55vw); height: 3px; border-radius: 3px;
+    background: rgba(255,255,255,.12); overflow: hidden;
+  }
+  #loader .bar i {
+    display: block; height: 100%; width: 40%;
+    background: linear-gradient(90deg, #ff6f91, #ffb067);
+    animation: slide 1.1s ease-in-out infinite;
+  }
+  #loader .tip { font-size: 13px; letter-spacing: .18em; opacity: .65; text-transform: uppercase; }
+  #loader .error {
+    max-width: 440px; margin: 0 24px; text-align: center; font-size: 15px; line-height: 1.55;
+    color: #ffb9b9; letter-spacing: .02em;
+  }
+  @keyframes slide {
+    0% { transform: translateX(-110%); }
+    100% { transform: translateX(360%); }
+  }
+  noscript { color: #fff; display: block; padding: 24px; }
+</style>
+</head>
+<body>
+  <div id="game" aria-label="Ascenso, juego de plataformas verticales"></div>
+
+  <div id="loader">
+    <div class="logo">AS<span>CENSO</span></div>
+    <div class="bar"><i></i></div>
+    <div class="tip">Cargando el cielo…</div>
+  </div>
+
+  <noscript>Activa JavaScript para jugar a ASCENSO.</noscript>
+
+  <script>
+    window.addEventListener('error', function (ev) {
+      var loader = document.getElementById('loader');
+      if (!loader || loader.classList.contains('hidden')) return;
+      var tip = loader.querySelector('.tip');
+      if (tip && tip.dataset.failed) return;
+      if (tip) {
+        tip.dataset.failed = '1';
+        tip.className = 'error';
+        tip.textContent = 'No se pudo iniciar el juego: ' + (ev.message || 'error de carga') +
+          '. Comprueba tu conexión (Phaser se carga desde CDN) y recarga.';
+      }
+    });
+  </script>
+
+  <!-- Phaser 3 (CDN). Regenerar con: npm run vendor si se desea uso offline. -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+
+  <!-- Código del juego (scripts clásicos: funciona también abriendo index.html en local). -->
+  <script src="src/config.js"></script>
+  <script src="src/utils.js"></script>
+  <script src="src/audio.js"></script>
+  <script src="src/art.js"></script>
+  <script src="src/background.js"></script>
+  <script src="src/ui.js"></script>
+  <script src="src/scenes/BootScene.js"></script>
+  <script src="src/scenes/MenuScene.js"></script>
+  <script src="src/scenes/GameScene.js"></script>
+  <script src="src/scenes/UIScene.js"></script>
+  <script src="src/main.js"></script>
+  <script>
+    (function () {
+      if (!window.Phaser) {
+        var loader = document.getElementById('loader');
+        if (loader) {
+          loader.innerHTML =
+            '<div class="logo">AS<span>CENSO</span></div>' +
+            '<div class="error">No se pudo cargar Phaser 3 desde el CDN.<br>' +
+            'Revisa la conexión a internet y recarga la página.</div>';
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
